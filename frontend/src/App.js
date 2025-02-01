@@ -1,4 +1,4 @@
- import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./App.css";
 
 function App() {
@@ -7,6 +7,7 @@ function App() {
   const [foodType, setFoodType] = useState(""); // Selected food type
   const [recipes, setRecipes] = useState([]); // Fetched recipes
   const [loading, setLoading] = useState(false); // Loading state
+  const canvasRef = useRef(null);
 
   // Handle file upload and analyze ingredients
   const handleFileUpload = async (event) => {
@@ -39,15 +40,90 @@ function App() {
     }
   };
 
+  // Capture Image from Camera
+  const captureImage = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      const track = stream.getVideoTracks()[0];
+      const imageCapture = new ImageCapture(track);
+
+      const blob = await imageCapture.takePhoto(); // Capture photo
+      sendImage(blob);
+
+      track.stop(); // Stop camera
+    } catch (error) {
+      alert("Failed to access the camera.");
+    }
+  };
+
+  // Send Image to Backend for ingredient recognition
+  const sendImage = async (imageBlob) => {
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("file", imageBlob, "captured_image.jpg");
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/ingredients/", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error("Failed to analyze image");
+
+      const data = await response.json();
+      console.log("Image Processed:", data);
+
+      setMessage(data.message || "Here are the detected items:");
+      setIngredients(data.ingredients || []);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to process image.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch Recipes Based on Ingredients and Food Type
+  const fetchRecipes = async () => {
+    if (ingredients.length === 0) {
+      alert("Please upload or capture an image with ingredients first.");
+      return;
+    }
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/recipes/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ingredients,
+          foodType,
+        }),
+      });
+
+      const data = await response.json();
+      setRecipes(data.recipes);
+    } catch (error) {
+      alert("Failed to fetch recipes.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="App">
       <h1>Lunchatron Recipe Generator</h1>
 
-      {/* File upload for ingredient recognition */}
-      <input type="file" onChange={handleFileUpload} accept="image/*" />
+      {/* Button to Take a Photo */}
+      <button onClick={captureImage}>Take a Photo</button>
+
+      {/* File Upload Option */}
+      <input type="file" accept="image/*" capture="environment" onChange={handleFileUpload} />
       {loading && <p>Processing your image...</p>}
 
-      {/* Display detected ingredients */}
+      {/* Display message and detected ingredients */}
       {message && <h2>{message}</h2>}
       {ingredients.length > 0 && (
         <ul>
@@ -66,12 +142,23 @@ function App() {
       </select>
 
       {/* Search Button */}
-      <button onClick={() => {}} disabled={loading || !ingredients.length}>
+      <button onClick={fetchRecipes} disabled={loading || !ingredients.length}>
         {loading ? "Searching..." : "Find Recipes"}
       </button>
+
+      {/* Display Recipes */}
+      {recipes.length > 0 && (
+        <>
+          <h2>Recipes:</h2>
+          <ul>
+            {recipes.map((recipe, index) => (
+              <li key={index}>{recipe}</li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }
 
 export default App;
-
