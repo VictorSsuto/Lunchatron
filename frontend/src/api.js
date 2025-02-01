@@ -10,7 +10,7 @@ export const recognizeIngredients = async (file) => {
     formData.append("file", file);
 
     try {
-        const resposnse = await fetch(`{$BASE_URL}/ingredients`, {
+        const response = await fetch(`${BASE_URL}/ingredients`, {
             method: "POST",
             body: formData,
         });
@@ -22,7 +22,7 @@ export const recognizeIngredients = async (file) => {
         const data = await response.json();
         return data.ingredients; // returns an array of detected ingredients
     } catch (error) {
-        console.error("Error recognizing ingredients:"), error;
+        console.error("Error recognizing ingredients:", error);
         throw error;
     }
 };
