@@ -1,16 +1,14 @@
 from fastapi import FastAPI, File, UploadFile, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-import sqlite3
 import shutil
 import os
-from PIL import Image
-import cv2
-import numpy as np
+import base64
+import requests
 
 app = FastAPI()
 
-# Allow CORS for communication with React frontend
+# Allow CORS for React frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -23,41 +21,62 @@ app.add_middleware(
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# Set your Google Cloud Vision API key
+GOOGLE_CLOUD_API_KEY = "AIzaSyAp4_NG5S_jFKnBYxwqb-dF0pv4YgthH1w"
+
 @app.get("/")
 def read_root():
+    """
+    Health check endpoint.
+    """
     return {"message": "Hello, Lunchatron is running!"}
 
-# ✅ FIXED: Corrected POST method for file upload
 @app.post("/ingredients/")
 async def recognize_ingredients(file: UploadFile = File(...)):
     """
-    Receive an image file and process it.
-    Returns a list of detected ingredients (Mock for now).
+    Recognizes food items in an image using Google Vision API (via REST).
     """
-    file_path = f"{UPLOAD_FOLDER}/{file.filename}"
+    try:
+        # Step 1: Save uploaded image
+        file_path = f"{UPLOAD_FOLDER}/{file.filename}"
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        print(f"✅ Image saved at: {file_path}")
 
-    # Save the uploaded file
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+        # Step 2: Read and encode the image in base64
+        with open(file_path, "rb") as image_file:
+            image_content = base64.b64encode(image_file.read()).decode("utf-8")
 
-    # Open image using PIL
-    image = Image.open(file_path)
+        # Google Vision API URL
+        url = f"https://vision.googleapis.com/v1/images:annotate?key={GOOGLE_CLOUD_API_KEY}"
 
-    # Convert image to numpy array (for OpenCV processing)
-    image_cv = cv2.imread(file_path)
-    height, width, _ = image_cv.shape
+        # Prepare request payload
+        payload = {
+            "requests": [
+                {
+                    "image": {"content": image_content},
+                    "features": [{"type": "LABEL_DETECTION", "maxResults": 10}],
+                }
+            ]
+        }
 
-    # Mock ingredient detection (Replace with AI model)
-    detected_ingredients = ["Tomato", "Cheese", "Basil"]
+        # Send request
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        data = response.json()
 
-    return {
-        "message": "Image received successfully",
-        "filename": file.filename,
-        "image_size": {"width": width, "height": height},
-        "ingredients": detected_ingredients,
-    }
+        # Extract labels from the response
+        labels = [annotation["description"] for annotation in data["responses"][0].get("labelAnnotations", [])]
 
-# ✅ FIXED: Corrected SQL Query and Response Format
+        return {
+            "message": "Ingredients detected successfully!",
+            "ingredients": labels,
+        }
+
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        return {"error": f"An error occurred: {str(e)}"}
+
 @app.get("/recipes/")
 async def get_recipes(
     ingredients: List[str] = Query([]),
@@ -66,31 +85,5 @@ async def get_recipes(
     """
     Retrieve recipes based on ingredients and food type.
     """
-    conn = sqlite3.connect("recipes.db")
-    cursor = conn.cursor()
-    
-    # Build SQL query for matching ingredients and category
-    placeholders = ' AND '.join([f"ingredients LIKE ?" for _ in ingredients])
-    query = f"""
-        SELECT name, ingredients, instructions, cook_time, calories
-        FROM recipes
-        WHERE ({placeholders}) AND category LIKE ?
-    """
-    
-    cursor.execute(query, [f"%{i}%" for i in ingredients] + [f"%{food_type}%"])
-    recipes = cursor.fetchall()
-    conn.close()
-    
-    # Format recipes into a list of dictionaries
-    recipe_list = [
-        {
-            "name": r[0],
-            "ingredients": r[1],
-            "instructions": r[2],
-            "cook_time": r[3],
-            "calories": r[4],
-        }
-        for r in recipes
-    ]
-    
-    return {"recipes": recipe_list}
+    # Placeholder for database logic
+    return {"recipes": []}
