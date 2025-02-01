@@ -10,7 +10,7 @@ export const recognizeIngredients = async (file) => {
     formData.append("file", file);
 
     try {
-        const resposnse = await fetch(`{$BASE_URL}/ingredients`, {
+        const response = await fetch(`${BASE_URL}/ingredients`, {
             method: "POST",
             body: formData,
         });
@@ -22,7 +22,7 @@ export const recognizeIngredients = async (file) => {
         const data = await response.json();
         return data.ingredients; // returns an array of detected ingredients
     } catch (error) {
-        console.error("Error recognizing ingredients:"), error;
+        console.error("Error recognizing ingredients:", error);
         throw error;
     }
 };
@@ -31,14 +31,14 @@ export const recognizeIngredients = async (file) => {
  * Fetch recipes based on ingredients and food types
  * @param {Array} ingredients - list of detected ingreidents
  * @param {string } foodType - the type of food selected
- * @returns {Promose<Array>} - a list of matching recpies based on ingredients
+ * @returns {Promise<Array>} - a list of matching recpies based on ingredients
  */
 
 export const getRecipes = async (ingredients, foodType) => {
     try{
         const response = await fetch(`${BASE_URL}/recipes`, {
             method: "POST",
-            headers: { "CONTENT-TYPE": "application/json" },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ingredients, food_type: foodType }),
             });
 
