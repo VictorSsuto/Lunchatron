@@ -1,5 +1,5 @@
 from fastapi import FastAPI, File, UploadFile
-from fastapi.middleware.cors import CORSMIddelware
+from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import sqlite3
 
@@ -10,7 +10,7 @@ MODEL_PATH = "mobilenet_v2.pb"
 
 # Allow CORS for communication with the React frontened
 app.add_middleware(
-    CORSMIddelware, 
+    CORSMiddleware, 
     allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
@@ -22,7 +22,7 @@ app.add_middleware(
 def read_root():
     return {"message": "Hello, Lunchatron is running!"}
 
-@app.post("/ingredients")
+@app.get("/ingredients")
 async def recognize_ingredients(file: UploadFile = File(...)):
     """
     Retrieve recipes based on ingredients and food type.
@@ -31,7 +31,7 @@ async def recognize_ingredients(file: UploadFile = File(...)):
     ingredients = ["Tomato", "Cheese", "Basil"]
     return {"ingredients": ingredients}
 
-@app.post("/recipes")
+@app.get("/recipes")
 async def get_recipes(ingredients: List[str], food_type: str):
     """
     Retrieve recipes based on ingredients and food type.
