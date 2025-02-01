@@ -1,52 +1,39 @@
-import React, { useState } from "react";
-import { recognizeIngredients, getRecipes } from "./api";
+ import React, { useState } from "react";
 import "./App.css";
 
 function App() {
+  const [message, setMessage] = useState(""); // Descriptive message from the backend
   const [ingredients, setIngredients] = useState([]); // Detected ingredients
   const [foodType, setFoodType] = useState(""); // Selected food type
   const [recipes, setRecipes] = useState([]); // Fetched recipes
   const [loading, setLoading] = useState(false); // Loading state
 
-  // Handle file upload and recognize ingredients
+  // Handle file upload and analyze ingredients
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
-  
+
     setLoading(true);
     const formData = new FormData();
     formData.append("file", file);
-  
+
     try {
       const response = await fetch("http://127.0.0.1:8000/ingredients/", {
         method: "POST",
         body: formData,
       });
-  
+
+      if (!response.ok) throw new Error("Failed to analyze image");
+
       const data = await response.json();
       console.log("Image Processed:", data);
-      setIngredients(data.ingredients);
-    } catch (error) {
-      alert("Failed to upload image.");
-    } finally {
-      setLoading(false);
-    }
-  };
-  
 
-  // Handle recipe search
-  const handleSearchRecipes = async () => {
-    if (!ingredients.length || !foodType) {
-      alert("Please upload an image and select a food type!");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const recipeList = await getRecipes(ingredients, foodType); // API call
-      setRecipes(recipeList);
+      // Update message and ingredients
+      setMessage(data.message || "Here are the detected items:");
+      setIngredients(data.ingredients || []);
     } catch (error) {
-      alert("Failed to fetch recipes. Please try again.");
+      console.error(error);
+      alert("Failed to upload image or analyze ingredients.");
     } finally {
       setLoading(false);
     }
@@ -58,7 +45,17 @@ function App() {
 
       {/* File upload for ingredient recognition */}
       <input type="file" onChange={handleFileUpload} accept="image/*" />
-      {loading && <p>Loading ingredients...</p>}
+      {loading && <p>Processing your image...</p>}
+
+      {/* Display detected ingredients */}
+      {message && <h2>{message}</h2>}
+      {ingredients.length > 0 && (
+        <ul>
+          {ingredients.map((ingredient, index) => (
+            <li key={index}>{ingredient}</li>
+          ))}
+        </ul>
+      )}
 
       {/* Dropdown for selecting food type */}
       <select value={foodType} onChange={(e) => setFoodType(e.target.value)}>
@@ -69,49 +66,12 @@ function App() {
       </select>
 
       {/* Search Button */}
-      <button onClick={handleSearchRecipes} disabled={loading || !ingredients.length}>
+      <button onClick={() => {}} disabled={loading || !ingredients.length}>
         {loading ? "Searching..." : "Find Recipes"}
       </button>
-
-      {/* Display detected ingredients */}
-      {ingredients.length > 0 && (
-        <>
-          <h2>Detected Ingredients:</h2>
-          <ul>
-            {ingredients.map((ingredient, index) => (
-              <li key={index}>{ingredient}</li>
-            ))}
-          </ul>
-        </>
-      )}
-
-      {/* Display fetched recipes */}
-      {recipes.length > 0 && (
-        <>
-          <h2>Recipes:</h2>
-          <ul>
-            {recipes.map((recipe, index) => (
-              <li key={index}>
-                <h3>{recipe.name}</h3>
-                <p>
-                  <strong>Ingredients:</strong> {recipe.ingredients.join(", ")}
-                </p>
-                <p>
-                  <strong>Instructions:</strong> {recipe.instructions}
-                </p>
-                <p>
-                  <strong>Cook Time:</strong> {recipe.cook_time} minutes
-                </p>
-                <p>
-                  <strong>Calories:</strong> {recipe.calories} kcal
-                </p>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
     </div>
   );
 }
 
 export default App;
+
