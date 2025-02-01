@@ -12,17 +12,27 @@ function App() {
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
-
+  
     setLoading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+  
     try {
-      const detectedIngredients = await recognizeIngredients(file); // API call
-      setIngredients(detectedIngredients);
+      const response = await fetch("http://127.0.0.1:8000/ingredients/", {
+        method: "POST",
+        body: formData,
+      });
+  
+      const data = await response.json();
+      console.log("Image Processed:", data);
+      setIngredients(data.ingredients);
     } catch (error) {
-      alert("Failed to recognize ingredients. Please try again.");
+      alert("Failed to upload image.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   // Handle recipe search
   const handleSearchRecipes = async () => {
