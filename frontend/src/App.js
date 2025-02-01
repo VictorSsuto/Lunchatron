@@ -23,3 +23,17 @@ function App() {
 }
 
 export default App;
+
+const handleSearchRecipes = async () => {
+  try {
+    const response = await fetch ("http://127.0.0.1:8000/recipes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ingredients, foot_type: foodType }), // use the detected ingredients and food type
+    });
+    const data = await response.json();
+    setRecipes(data.recipes); // Update the recipe state with the response
+  } catch (error) {
+    console.error("Error getting recipes:", error);
+  }
+};
