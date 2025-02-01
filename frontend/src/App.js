@@ -12,27 +12,17 @@ function App() {
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
-  
+
     setLoading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-  
     try {
-      const response = await fetch("http://127.0.0.1:8000/ingredients/", {
-        method: "POST",
-        body: formData,
-      });
-  
-      const data = await response.json();
-      console.log("Image Processed:", data);
-      setIngredients(data.ingredients);
+      const detectedIngredients = await recognizeIngredients(file);
+      setIngredients(detectedIngredients);
     } catch (error) {
-      alert("Failed to upload image.");
+      alert("Failed to upload image. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  
 
   // Handle recipe search
   const handleSearchRecipes = async () => {
@@ -54,62 +44,82 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Lunchatron Recipe Generator</h1>
+      <header className="App-header">
+        <h1>Lunchatron Recipe Generator</h1>
+      </header>
 
-      {/* File upload for ingredient recognition */}
-      <input type="file" onChange={handleFileUpload} accept="image/*" />
-      {loading && <p>Loading ingredients...</p>}
+      <main className="App-main">
+        <section className="upload-section">
+          <h2>Upload an Image</h2>
+          <input
+            type="file"
+            onChange={handleFileUpload}
+            accept="image/*"
+            className="upload-input"
+          />
+          {loading && <p className="loading-text">Processing image...</p>}
+        </section>
 
-      {/* Dropdown for selecting food type */}
-      <select value={foodType} onChange={(e) => setFoodType(e.target.value)}>
-        <option value="">Select Food Type</option>
-        <option value="Italian">Italian</option>
-        <option value="Vegan">Vegan</option>
-        <option value="Dessert">Dessert</option>
-      </select>
+        <section className="food-type-section">
+          <h2>Select Food Type</h2>
+          <select
+            value={foodType}
+            onChange={(e) => setFoodType(e.target.value)}
+            className="dropdown"
+          >
+            <option value="">Select Food Type</option>
+            <option value="Italian">Italian</option>
+            <option value="Vegan">Vegan</option>
+            <option value="Dessert">Dessert</option>
+          </select>
+        </section>
 
-      {/* Search Button */}
-      <button onClick={handleSearchRecipes} disabled={loading || !ingredients.length}>
-        {loading ? "Searching..." : "Find Recipes"}
-      </button>
+        <button
+          onClick={handleSearchRecipes}
+          disabled={loading || !ingredients.length}
+          className="search-button"
+        >
+          {loading ? "Searching..." : "Find Recipes"}
+        </button>
 
-      {/* Display detected ingredients */}
-      {ingredients.length > 0 && (
-        <>
-          <h2>Detected Ingredients:</h2>
-          <ul>
-            {ingredients.map((ingredient, index) => (
-              <li key={index}>{ingredient}</li>
-            ))}
-          </ul>
-        </>
-      )}
+        {ingredients.length > 0 && (
+          <section className="ingredients-section">
+            <h2>Detected Ingredients</h2>
+            <ul className="ingredients-list">
+              {ingredients.map((ingredient, index) => (
+                <li key={index} className="ingredient-item">
+                  {ingredient}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
-      {/* Display fetched recipes */}
-      {recipes.length > 0 && (
-        <>
-          <h2>Recipes:</h2>
-          <ul>
-            {recipes.map((recipe, index) => (
-              <li key={index}>
-                <h3>{recipe.name}</h3>
-                <p>
-                  <strong>Ingredients:</strong> {recipe.ingredients.join(", ")}
-                </p>
-                <p>
-                  <strong>Instructions:</strong> {recipe.instructions}
-                </p>
-                <p>
-                  <strong>Cook Time:</strong> {recipe.cook_time} minutes
-                </p>
-                <p>
-                  <strong>Calories:</strong> {recipe.calories} kcal
-                </p>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+        {recipes.length > 0 && (
+          <section className="recipes-section">
+            <h2>Recipes</h2>
+            <ul className="recipes-list">
+              {recipes.map((recipe, index) => (
+                <li key={index} className="recipe-card">
+                  <h3>{recipe.name}</h3>
+                  <p>
+                    <strong>Ingredients:</strong> {recipe.ingredients.join(", ")}
+                  </p>
+                  <p>
+                    <strong>Instructions:</strong> {recipe.instructions}
+                  </p>
+                  <p>
+                    <strong>Cook Time:</strong> {recipe.cook_time} minutes
+                  </p>
+                  <p>
+                    <strong>Calories:</strong> {recipe.calories} kcal
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </main>
     </div>
   );
 }
