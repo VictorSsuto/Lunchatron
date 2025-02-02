@@ -4,7 +4,6 @@ import "./App.css";
 function App() {
   const [message, setMessage] = useState(""); // Descriptive message from the backend
   const [ingredients, setIngredients] = useState([]); // Detected ingredients
-  const [foodType, setFoodType] = useState(""); // Selected food type
   const [recipes, setRecipes] = useState([]); // Fetched recipes
   const [loading, setLoading] = useState(false); // Loading state
   const fileInputRef = useRef(null); // Ref for the file input
@@ -43,7 +42,9 @@ function App() {
   // Capture Image from Camera
   const captureImage = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+      });
       const track = stream.getVideoTracks()[0];
       const imageCapture = new ImageCapture(track);
 
@@ -83,7 +84,7 @@ function App() {
     }
   };
 
-  // Fetch Recipes Based on Ingredients and Food Type
+  // Fetch Recipes Based on Ingredients
   const fetchRecipes = async () => {
     if (ingredients.length === 0) {
       alert("Please upload or capture an image with ingredients first.");
@@ -97,14 +98,11 @@ function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ingredients,
-          foodType,
-        }),
+        body: JSON.stringify(ingredients),
       });
 
       const data = await response.json();
-      setRecipes(data.recipes);
+      setRecipes(data.recipes || []);
     } catch (error) {
       alert("Failed to fetch recipes.");
     } finally {
@@ -116,7 +114,6 @@ function App() {
   const resetApp = () => {
     setMessage("");
     setIngredients([]);
-    setFoodType("");
     setRecipes([]);
     setLoading(false);
 
@@ -133,52 +130,66 @@ function App() {
       </header>
 
       <main className="App-main">
-        <button className="search-button" onClick={captureImage}>Take a Photo</button>
+        <button className="search-button" onClick={captureImage}>
+          Take a Photo
+        </button>
 
-        {/* Add ref to the file input */}
         <input
           type="file"
           accept="image/*"
           capture="environment"
           className="upload-input"
           onChange={handleFileUpload}
-          ref={fileInputRef} // Attach the ref
+          ref={fileInputRef}
         />
         {loading && <p>Processing your image...</p>}
 
         {message && <h2>{message}</h2>}
         {ingredients.length > 0 && (
-          <ul>
+          <div className="ingredients-list">
             {ingredients.map((ingredient, index) => (
-              <li key={index}>{ingredient}</li>
+              <div key={index}>{ingredient}</div>
             ))}
-          </ul>
+          </div>
         )}
 
-        <select className="dropdown" value={foodType} onChange={(e) => setFoodType(e.target.value)}>
-          <option value="">Select Food Type</option>
-          <option value="Italian">Italian</option>
-          <option value="Vegan">Vegan</option>
-          <option value="Dessert">Dessert</option>
-        </select>
-
-        <button className="search-button" onClick={fetchRecipes} disabled={loading || !ingredients.length}>
+        <button
+          className="search-button"
+          onClick={fetchRecipes}
+          disabled={loading || !ingredients.length}
+        >
           {loading ? "Searching..." : "Find Recipes"}
         </button>
 
         {recipes.length > 0 && (
           <>
             <h2>Recipes:</h2>
-            <ul>
+            <div className="recipes-list">
               {recipes.map((recipe, index) => (
-                <li key={index}>{recipe}</li>
+                <div key={index} className="recipe-item">
+                  {recipe.image ? (
+                    <img
+                      src={recipe.image}
+                      alt={recipe.title}
+                      className="recipe-image"
+                    />
+                  ) : (
+                    <div>No image available</div>
+                  )}
+                  <h3>{recipe.title}</h3>
+                  <p>{recipe.description}</p>
+                  <a href={recipe.link} target="_blank" rel="noopener noreferrer">
+                    Click for Recipe
+                  </a>
+                </div>
               ))}
-            </ul>
+            </div>
           </>
         )}
 
-        {/* Reset Button */}
-        <button className="reset-button" onClick={resetApp}>Reset</button>
+        <button className="reset-button" onClick={resetApp}>
+          Reset
+        </button>
       </main>
     </div>
   );

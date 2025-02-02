@@ -150,3 +150,44 @@ h2 {
   margin-top: 30px;
   font-size: 14px;
 }
+/* Ensure the images are all the same size and centered */
+.recipe-image {
+  width: 100%;
+  max-width: 300px;  /* You can adjust this size as needed */
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Center the recipe list and give it a consistent layout */
+.recipes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.recipe-item {
+  text-align: center;
+  max-width: 300px;
+  width: 100%;
+}
+
+.recipe-item h3 {
+  font-size: 1.2em;
+  color: #333;
+}
+
+.recipe-item p {
+  font-size: 1em;
+  color: #666;
+}
+
+.recipe-item a {
+  color: #0073e6;
+  text-decoration: none;
+}
+
+.recipe-item a:hover {
+  text-decoration: underline;
+}
