@@ -1,193 +1,175 @@
-/* Import a Handwritten Google Font */
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Pacifico&family=Quicksand:wght@400;500&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 body {
-  background: url("https://images.unsplash.com/photo-1600361919702-c4f743f6c10b?crop=entropy&cs=tinysrgb&fit=max&ixid=MXwyMDg3OXwwfDF8c2VhY2h8M3x8a2l0Y2hlbnxlbnwwfHx8fDE2NzkzNjA5NjI&ixlib=rb-1.2.1&q=80&w=1080"), 
-              linear-gradient(to bottom, #f8e1c2, #d8a16f); /* Warm kitchen tones with veggies */
-  background-size: cover;
-  background-repeat: no-repeat;
-  font-family: "Quicksand", sans-serif;
-  color: #5c3d2e;
   margin: 0;
-  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to bottom, #fdf1e4, #fbe4d6);
+  color: #444;
+  text-align: center;
 }
 
-/* Header – Framed Look with Kitchen Style */
 .App-header {
-  background: url("https://images.unsplash.com/photo-1600361919702-c4f743f6c10b?crop=entropy&cs=tinysrgb&fit=max&ixid=MXwyMDg3OXwwfDF8c2VhY2h8M3x8a2l0Y2hlbnxlbnwwfHx8fDE2NzkzNjA5NjI&ixlib=rb-1.2.1&q=80&w=1080");
-  background-size: cover;
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.5rem; /* Reduced header size */
   text-align: center;
-  color: #fef3e3;
-  padding: 30px;
-  font-family: "Pacifico", cursive;
-  font-size: 2.5rem;
-  border: 10px solid #d87c3c; /* Framing the header with a warm red color */
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Main Content – Light & Fresh with Accents */
-.App-main {
-  padding: 30px;
-  max-width: 800px;
-  margin: 40px auto;
-  background: rgba(255, 255, 255, 0.8); /* Slightly transparent to show the background */
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  text-align: center;
-}
-
-/* Headings – Stylish & Playful */
-h1 {
-  font-family: "Pacifico", cursive;
-  color: #b35928; /* Earthy orange for a warm, inviting feel */
-}
-
-h2 {
-  color: #6b8e23; /* Light vegetable green for balance */
-}
-
-/* Inputs & Dropdown – Soft & Inviting with Hover Effects */
-.upload-input,
-.dropdown {
-  display: block;
-  margin-top: 10px;
-  padding: 12px;
-  border: 2px solid #d87c3c;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 400px;
-  background-color: rgba(255, 255, 255, 0.9);
-  font-size: 16px;
-  transition: 0.3s;
-}
-
-.upload-input:hover,
-.dropdown:hover {
-  border-color: #b35928;
-}
-
-/* Buttons – Fresh Green with Hover Effect */
-.search-button {
-  background-color: #d87c3c;
-  color: white;
-  padding: 14px 28px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: 600;
-  margin-top: 20px;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-.search-button:hover {
-  background-color: #b35928;
-  transform: scale(1.05);
-}
-
-.search-button:disabled {
-  background-color: #ddd;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* Reset Button – Soft Red with Smooth Hover Effects */
-.reset-button {
-  background-color: #f29972; /* Soft red-orange color */
-  color: white;
-  padding: 14px 28px;
-  border: none;
-  border-radius: 50px; /* Rounded edges for a smooth, modern feel */
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: 600;
-  margin-top: 20px;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-}
-
-/* Hover Effect – Smooth Transition to a Slightly Darker Red */
-.reset-button:hover {
-  background-color: #f17452; /* Darker red-orange on hover */
-  transform: scale(1.05); /* Slightly enlarge to draw attention */
-}
-
-/* Disabled State – Light Gray for Unclickable State */
-.reset-button:disabled {
-  background-color: #e0e0e0;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* Add a subtle gradient background for extra visual appeal */
-.reset-button {
-  background: linear-gradient(to right, #f29972, #f17452); /* Smooth gradient from soft to dark red-orange */
-}
-
-/* Recipe Card Styling – White and Colorful */
-.recipe-card {
-  background: #fff;
-  padding: 20px;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  padding: 1.5rem;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 20px 0;
-  text-align: left;
-  border-left: 5px solid #6b8e23; /* Green left border for a fresh look */
+  margin-bottom: 2rem;
 }
 
-.recipe-card h3 {
-  color: #6b8e23; /* Green to match the vegetable theme */
+.App-main {
+  margin: 30px auto;
+  max-width: 800px;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Footer – Simple & Warm */
-.footer {
-  background: #5c3d2e;
-  color: white;
-  text-align: center;
-  padding: 15px;
-  margin-top: 30px;
-  font-size: 14px;
-}
-/* Ensure the images are all the same size and centered */
-.recipe-image {
-  width: 100%;
-  max-width: 300px;  /* You can adjust this size as needed */
-  height: auto;
-  display: block;
-  margin: 0 auto;
-}
-
-/* Center the recipe list and give it a consistent layout */
-.recipes-list {
+.button-group {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-around;
   gap: 20px;
-  justify-content: center;
+  margin-bottom: 20px;
+}
+
+button {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2rem;
+  padding: 12px 25px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button.search-button {
+  background-color: #ff9562;
+  color: white;
+}
+
+button.search-button:hover {
+  background-color: #f27445;
+}
+
+button.reset-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #f27445;
+  color: white;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button.reset-button:hover {
+  background-color: #ff9562;
+}
+
+button:disabled {
+  background-color: #dcdcdc;
+  cursor: not-allowed;
+}
+
+.upload-button {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2rem;
+  padding: 12px 25px;
+  background-color: #ff9562;
+  color: white;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-button:hover {
+  background-color: #f27445;
+}
+
+.image-preview {
+  margin: 25px auto;
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.ingredients-list {
+  margin: 25px 0;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fffbf5;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.ingredients-list h3 {
+  color: #ff9562;
+  font-weight: bold;
+}
+
+.ingredient-item {
+  background-color: #ffede5;
+  margin: 8px 0;
+  padding: 8px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+/* Recipe List Layout */
+.recipes-list {
+  margin-top: 25px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fffdf7;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 .recipe-item {
-  text-align: center;
-  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #fffbf5;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  align-items: center;
+}
+
+.recipe-item img {
   width: 100%;
+  height: auto;
+  max-height: 200px;
+  border-radius: 8px;
+  margin-bottom: 15px;
 }
 
-.recipe-item h3 {
-  font-size: 1.2em;
-  color: #333;
-}
-
-.recipe-item p {
-  font-size: 1em;
-  color: #666;
+.recipe-item h4 {
+  margin: 12px 0;
+  font-size: 1.3rem;
+  color: #ff9562;
 }
 
 .recipe-item a {
-  color: #0073e6;
+  color: #ff9562;
   text-decoration: none;
+  font-weight: bold;
 }
 
 .recipe-item a:hover {
-  text-decoration: underline;
+  color: #f27445;
 }

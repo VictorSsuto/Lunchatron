@@ -2,16 +2,22 @@ import React, { useState, useRef } from "react";
 import "./App.css";
 
 function App() {
-  const [message, setMessage] = useState(""); // Descriptive message from the backend
+  const [message, setMessage] = useState(""); // Message from the backend
   const [ingredients, setIngredients] = useState([]); // Detected ingredients
   const [recipes, setRecipes] = useState([]); // Fetched recipes
   const [loading, setLoading] = useState(false); // Loading state
-  const fileInputRef = useRef(null); // Ref for the file input
+  const [imagePreview, setImagePreview] = useState(null); // Image preview
+  const fileInputRef = useRef(null); // Ref for file input
 
   // Handle file upload and analyze ingredients
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
+
+    // Create an image preview
+    const reader = new FileReader();
+    reader.onload = () => setImagePreview(reader.result);
+    reader.readAsDataURL(file);
 
     setLoading(true);
     const formData = new FormData();
@@ -28,8 +34,7 @@ function App() {
       const data = await response.json();
       console.log("Image Processed:", data);
 
-      // Update message and ingredients
-      setMessage(data.message || "Here are the detected items:");
+      setMessage(data.message || "Ingredients detected successfully!");
       setIngredients(data.ingredients || []);
     } catch (error) {
       console.error(error);
@@ -39,7 +44,7 @@ function App() {
     }
   };
 
-  // Capture Image from Camera
+  // Capture image from camera
   const captureImage = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -48,16 +53,21 @@ function App() {
       const track = stream.getVideoTracks()[0];
       const imageCapture = new ImageCapture(track);
 
-      const blob = await imageCapture.takePhoto(); // Capture photo
-      sendImage(blob);
+      const blob = await imageCapture.takePhoto();
+      const imageUrl = URL.createObjectURL(blob);
+      setImagePreview(imageUrl);
 
-      track.stop(); // Stop camera
+      // Send the captured image to the backend
+      await sendImage(blob);
+
+      track.stop();
     } catch (error) {
+      console.error("Error capturing image:", error);
       alert("Failed to access the camera.");
     }
   };
 
-  // Send Image to Backend for ingredient recognition
+  // Send image blob to the backend
   const sendImage = async (imageBlob) => {
     setLoading(true);
     const formData = new FormData();
@@ -74,7 +84,7 @@ function App() {
       const data = await response.json();
       console.log("Image Processed:", data);
 
-      setMessage(data.message || "Here are the detected items:");
+      setMessage(data.message || "Ingredients detected successfully!");
       setIngredients(data.ingredients || []);
     } catch (error) {
       console.error(error);
@@ -115,9 +125,9 @@ function App() {
     setMessage("");
     setIngredients([]);
     setRecipes([]);
+    setImagePreview(null);
     setLoading(false);
 
-    // Reset the file input value
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -130,29 +140,50 @@ function App() {
       </header>
 
       <main className="App-main">
+        {/* Take a Photo */}
         <button className="search-button" onClick={captureImage}>
           Take a Photo
         </button>
 
+        {/* File Upload Button */}
+        <label htmlFor="file-upload" className="upload-button">
+          Upload a Photo
+        </label>
         <input
           type="file"
           accept="image/*"
-          capture="environment"
+          id="file-upload"
           className="upload-input"
           onChange={handleFileUpload}
           ref={fileInputRef}
+          style={{ display: "none" }}  // Hide the file input
         />
+
+        {/* Image Preview */}
+        {imagePreview && (
+          <div className="image-preview">
+            <h3>Preview of Your Image</h3>
+            <img src={imagePreview} alt="Preview" />
+          </div>
+        )}
+
+        {/* Loading State */}
         {loading && <p>Processing your image...</p>}
 
+        {/* Display Detected Ingredients */}
         {message && <h2>{message}</h2>}
         {ingredients.length > 0 && (
           <div className="ingredients-list">
+            <h3>Detected Ingredients:</h3>
             {ingredients.map((ingredient, index) => (
-              <div key={index}>{ingredient}</div>
+              <div key={index} className="ingredient-item">
+                {ingredient}
+              </div>
             ))}
           </div>
         )}
 
+        {/* Find Recipes Button */}
         <button
           className="search-button"
           onClick={fetchRecipes}
@@ -161,32 +192,22 @@ function App() {
           {loading ? "Searching..." : "Find Recipes"}
         </button>
 
+        {/* Display Recipes */}
         {recipes.length > 0 && (
-          <>
-            <h2>Recipes:</h2>
-            <div className="recipes-list">
-              {recipes.map((recipe, index) => (
-                <div key={index} className="recipe-item">
-                  {recipe.image ? (
-                    <img
-                      src={recipe.image}
-                      alt={recipe.title}
-                      className="recipe-image"
-                    />
-                  ) : (
-                    <div>No image available</div>
-                  )}
-                  <h3>{recipe.title}</h3>
-                  <p>{recipe.description}</p>
-                  <a href={recipe.link} target="_blank" rel="noopener noreferrer">
-                    Click for Recipe
-                  </a>
-                </div>
-              ))}
-            </div>
-          </>
+          <div className="recipes-list">
+            {recipes.map((recipe, index) => (
+              <div key={index} className="recipe-item">
+                {recipe.image && <img src={recipe.image} alt={recipe.title} />}
+                <h4>{recipe.title}</h4>
+                <a href={recipe.link} target="_blank" rel="noopener noreferrer">
+                  Click for Recipe
+                </a>
+              </div>
+            ))}
+          </div>
         )}
 
+        {/* Reset Button */}
         <button className="reset-button" onClick={resetApp}>
           Reset
         </button>
