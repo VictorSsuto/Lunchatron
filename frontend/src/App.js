@@ -114,49 +114,47 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Lunchatron Recipe Generator</h1>
+      <header className="App-header">
+        <h1>Lunchatron Recipe Generator</h1>
+      </header>
 
-      {/* Button to Take a Photo */}
-      <button onClick={captureImage}>Take a Photo</button>
+      <main className="App-main">
+        <button className="search-button" onClick={captureImage}>Take a Photo</button>
 
-      {/* File Upload Option */}
-      <input type="file" accept="image/*" capture="environment" onChange={handleFileUpload} />
-      {loading && <p>Processing your image...</p>}
+        <input type="file" accept="image/*" capture="environment" className="upload-input" onChange={handleFileUpload} />
+        {loading && <p>Processing your image...</p>}
 
-      {/* Display message and detected ingredients */}
-      {message && <h2>{message}</h2>}
-      {ingredients.length > 0 && (
-        <ul>
-          {ingredients.map((ingredient, index) => (
-            <li key={index}>{ingredient}</li>
-          ))}
-        </ul>
-      )}
-
-      {/* Dropdown for selecting food type */}
-      <select value={foodType} onChange={(e) => setFoodType(e.target.value)}>
-        <option value="">Select Food Type</option>
-        <option value="Italian">Italian</option>
-        <option value="Vegan">Vegan</option>
-        <option value="Dessert">Dessert</option>
-      </select>
-
-      {/* Search Button */}
-      <button onClick={fetchRecipes} disabled={loading || !ingredients.length}>
-        {loading ? "Searching..." : "Find Recipes"}
-      </button>
-
-      {/* Display Recipes */}
-      {recipes.length > 0 && (
-        <>
-          <h2>Recipes:</h2>
+        {message && <h2>{message}</h2>}
+        {ingredients.length > 0 && (
           <ul>
-            {recipes.map((recipe, index) => (
-              <li key={index}>{recipe}</li>
+            {ingredients.map((ingredient, index) => (
+              <li key={index}>{ingredient}</li>
             ))}
           </ul>
-        </>
-      )}
+        )}
+
+        <select className="dropdown" value={foodType} onChange={(e) => setFoodType(e.target.value)}>
+          <option value="">Select Food Type</option>
+          <option value="Italian">Italian</option>
+          <option value="Vegan">Vegan</option>
+          <option value="Dessert">Dessert</option>
+        </select>
+
+        <button className="search-button" onClick={fetchRecipes} disabled={loading || !ingredients.length}>
+          {loading ? "Searching..." : "Find Recipes"}
+        </button>
+
+        {recipes.length > 0 && (
+          <>
+            <h2>Recipes:</h2>
+            <ul>
+              {recipes.map((recipe, index) => (
+                <li key={index}>{recipe}</li>
+              ))}
+            </ul>
+          </>
+        )}
+      </main>
     </div>
   );
 }
