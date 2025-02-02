@@ -7,7 +7,7 @@ function App() {
   const [foodType, setFoodType] = useState(""); // Selected food type
   const [recipes, setRecipes] = useState([]); // Fetched recipes
   const [loading, setLoading] = useState(false); // Loading state
-  const canvasRef = useRef(null);
+  const fileInputRef = useRef(null); // Ref for the file input
 
   // Handle file upload and analyze ingredients
   const handleFileUpload = async (event) => {
@@ -112,6 +112,20 @@ function App() {
     }
   };
 
+  // Reset all states and clear file input
+  const resetApp = () => {
+    setMessage("");
+    setIngredients([]);
+    setFoodType("");
+    setRecipes([]);
+    setLoading(false);
+
+    // Reset the file input value
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -121,7 +135,15 @@ function App() {
       <main className="App-main">
         <button className="search-button" onClick={captureImage}>Take a Photo</button>
 
-        <input type="file" accept="image/*" capture="environment" className="upload-input" onChange={handleFileUpload} />
+        {/* Add ref to the file input */}
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="upload-input"
+          onChange={handleFileUpload}
+          ref={fileInputRef} // Attach the ref
+        />
         {loading && <p>Processing your image...</p>}
 
         {message && <h2>{message}</h2>}
@@ -154,6 +176,9 @@ function App() {
             </ul>
           </>
         )}
+
+        {/* Reset Button */}
+        <button className="reset-button" onClick={resetApp}>Reset</button>
       </main>
     </div>
   );
