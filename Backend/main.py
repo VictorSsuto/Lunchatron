@@ -8,6 +8,8 @@ import base64
 import requests
 from google.cloud import language_v1
 import logging
+from dotenv import load_dotenv
+load_dotenv()
 
 app = FastAPI()
 
@@ -28,12 +30,12 @@ app.add_middleware(
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Google API Keys
-GOOGLE_CLOUD_API_KEY = "AIzaSyCz6Gh4ypZuonnBT-hv7jH__1S8zUCf9E8"  # Replace with your Custom Search API key
-SEARCH_ENGINE_ID = "24f6d6863057e4796"  # Replace with your CX (Search Engine ID)
+GOOGLE_CLOUD_API_KEY = os.getenv("GOOGLE_CLOUD_API_KEY")
+SEARCH_ENGINE_ID = os.getenv("SEARCH_ENGINE_ID")
+GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
 # Set up Google Natural Language credentials
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "serviceaccountkey.json"  # Path to your service account JSON key
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_APPLICATION_CREDENTIALS
 
 
 @app.post("/upload-image/")
